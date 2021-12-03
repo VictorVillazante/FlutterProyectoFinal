@@ -2,7 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
 class CrearCuenta extends StatefulWidget {
   const CrearCuenta({Key? key}) : super(key: key);
 
@@ -18,7 +21,47 @@ class _CrearCuentaState extends State<CrearCuenta> {
   final controladorTextFieldDireccion = TextEditingController();
   final controladorTextFieldDireccion2 = TextEditingController();
   final controladorTextFieldDistrito = TextEditingController();
+  postA() async{
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    http.post(
+      "http://10.0.2.2:3000/payment",
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'address': controladorTextFieldDireccion.text,
+        "address2": controladorTextFieldDireccion2.text,
+        "district": controladorTextFieldDistrito.text,
+        "city_id": 1.toString(),
+        "postal_code": 1.toString(),
+        "phone": 4929328.toString(),
+        "last_update": dateFormat.format(DateTime.now()),
+      }),
 
+    ).then((response) {
+
+    });
+  }
+  postC() async{
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    http.post(
+      "http://10.0.2.2:3000/payment",
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'first_name': controladorTextFieldNombre.text,
+        "last_name": controladorTextFieldApellido.text,
+        "email": controladorTextFieldEmail.text,
+        "active": 1.toString(),
+        "create_date": dateFormat.format(DateTime.now()),
+        "last_update": dateFormat.format(DateTime.now()),
+      }),
+
+    ).then((response) {
+
+    });
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +81,8 @@ class _CrearCuentaState extends State<CrearCuenta> {
           RaisedButton(
             color: Colors.green,
               onPressed: (){
-
+                postA();
+                postC();
               },
               child:Text("Registrar")
           )
