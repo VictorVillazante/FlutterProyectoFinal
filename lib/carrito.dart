@@ -10,7 +10,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_app_tienda_videos/galeria.dart';
 
 class Carrito extends StatelessWidget {
   const Carrito({Key? key}) : super(key: key);
@@ -324,7 +324,7 @@ class _SecundarioState extends State<Secundario> {
                   double d3 = d1+d2;
                   aux = operacion('$d1  +   $d2', d3);
                 }*/
-                Navigator.push(context,MaterialPageRoute(builder:(context)=>Inicio()));
+                Navigator.push(context,MaterialPageRoute(builder:(context)=>Galeria()));
                 break;
             }
           });
