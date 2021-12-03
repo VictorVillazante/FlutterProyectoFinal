@@ -24,7 +24,7 @@ class _CrearCuentaState extends State<CrearCuenta> {
   postA() async{
     DateFormat dateFormat = DateFormat("yyyy-MM-dd");
     http.post(
-      "http://10.0.2.2:3000/payment",
+      "http://10.0.2.2:3000/addresses",
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -45,7 +45,7 @@ class _CrearCuentaState extends State<CrearCuenta> {
   postC() async{
     DateFormat dateFormat = DateFormat("yyyy-MM-dd");
     http.post(
-      "http://10.0.2.2:3000/payment",
+      "http://10.0.2.2:3000/customer",
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
