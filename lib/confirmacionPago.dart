@@ -215,13 +215,18 @@ class _SecundarioState extends State<Secundario> {
                   ],
                 ),
                 RaisedButton(
+
                     onPressed: () {
+                      if(idUsuario!=""){
                         for(int i=0;i<carrito.length;i++){
                           print(carrito[i]["inventory_id"]);
                           postRental(carrito[i]["inventory_id"]);
                           postPayment();
                         }
                         deleteQuitarTodosCarrito();
+                      }else{
+                        print("usuario no identificado");
+                      }
 
                     },
                     child:Text("confirmar")
@@ -231,7 +236,12 @@ class _SecundarioState extends State<Secundario> {
 
                     },
                     child: Text("Cancelar"),
-                    )
+                    ),
+                (idUsuario=="")?
+                Center(child: Container(padding:EdgeInsets.all(20),width:200,height:100, color:Colors.redAccent,child: Text("Usuario no identificado, identifiquese")))
+                    :
+                Center(child: Container(padding:EdgeInsets.all(20),width:200,height:100,color:Colors.green,child: Text("Usuario identificado")))
+
               ],
             ),
           ),
