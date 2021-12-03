@@ -23,8 +23,10 @@ class _CrearCuentaState extends State<CrearCuenta> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Crear cuenta"),
+        backgroundColor: Colors.green,
       ),
-      body: Column(
+      body: ListView(
+        padding: EdgeInsets.all(10),
         children: [
           campo("Nombres",controladorTextFieldNombre),
           campo("Apellidos",controladorTextFieldApellido),
@@ -34,6 +36,7 @@ class _CrearCuentaState extends State<CrearCuenta> {
           campo("Direccion 2",controladorTextFieldDireccion2),
           campo("Distrito",controladorTextFieldDistrito),
           RaisedButton(
+            color: Colors.green,
               onPressed: (){
 
               },
@@ -44,19 +47,22 @@ class _CrearCuentaState extends State<CrearCuenta> {
     );
   }
   Widget campo(String texto,TextEditingController controlador){
-    return Row(
-      children: [
-        Text(texto),
-        SizedBox(//Sizedbox necesario si se quiere utilizar el input decorator
-          width: 300,
-          child: TextField(
-            controller: controlador,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Container(width:80,child: Text(texto)),
+          SizedBox(//Sizedbox necesario si se quiere utilizar el input decorator
+            width: 200,
+            child: TextField(
+              controller: controlador,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

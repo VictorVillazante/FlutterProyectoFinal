@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Inicio extends StatefulWidget {
   @override
@@ -17,6 +18,20 @@ class Inicio extends StatefulWidget {
 class _InicioState extends State<Inicio> {
 
   @override
+  deleteQuitarTodosCarrito() async{
+    print("deleteQuitarTodosCarrito");
+    //http.Response response = await http.get("http://10.0.2.2:3000/tasks");
+    http.delete("http://10.0.2.2:3000/cart/",headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    }).then((response){
+      //para ejecutar necesita una respuesta(response) se debe enviar desde javascript al menos un res.send("")
+      print("despues de eliminar todo el carrito");
+      setState(() {
+
+      });
+    });
+
+  }
   get(String direccion) async {
     print("Establecer tienda");
     //http.Response response = await http.get("http://10.0.2.2:3000/tasks");
@@ -35,16 +50,22 @@ class _InicioState extends State<Inicio> {
         ),
         body: Container(
           width: MediaQuery.of(context).size.width,
-          child: Column(
+          child: ListView(
             children: [
               Center(child: Container(child: Text("Bienvenido a la sakila rental",style: TextStyle(fontSize: 25),),margin: EdgeInsets.all(20),)),
-              Container(child: Text("Porfavor seleccione el pais en el que desea comprar",style: TextStyle(fontSize: 12),),margin: EdgeInsets.only(bottom: 20),),
+              Container(child: Text("Porfavor seleccione el pais en el que desea comprar",style: TextStyle(fontSize: 12),),margin: EdgeInsets.only(bottom: 20,left: 20),),
               GestureDetector(
-                onTap: (){
+                onTap: () async {
                   get("http://10.0.2.2:3000/store/1");
+                  SharedPreferences preferences= await SharedPreferences.getInstance();
+                  preferences.setInt("tiendaId",1);
+                  deleteQuitarTodosCarrito();
+                  preferences.setString("usuario", "");
+                  preferences.setString("idUsuario", "");
                   Navigator.push(context,MaterialPageRoute(builder:(context)=>Secundario()));
                 },
                 child: Container(
+                    width: 200,
                     color: Colors.green,
                     padding: EdgeInsets.all(20),
                     margin: EdgeInsets.only(bottom: 20),
@@ -63,8 +84,13 @@ class _InicioState extends State<Inicio> {
               ),
 
               GestureDetector(
-                onTap: (){
+                onTap: () async {
                   get("http://10.0.2.2:3000/store/2");
+                  SharedPreferences preferences= await SharedPreferences.getInstance();
+                  preferences.setInt("tiendaId",2);
+                  deleteQuitarTodosCarrito();
+                  preferences.setString("usuario", "");
+                  preferences.setString("idUsuario", "");
                   Navigator.push(context,MaterialPageRoute(builder:(context)=>Secundario()));
                 },
                 child: Container(

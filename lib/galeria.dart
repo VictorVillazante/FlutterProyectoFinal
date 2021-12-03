@@ -158,28 +158,29 @@ class _SecundarioState extends State<Secundario> {
                 ],
               ),
             ),
-            DropdownButton<String>(
-              value: buscarActorPelicula,
-              iconSize: 24,
-              elevation: 16,
-              underline: Container(
-                height: 2,
-                color: Colors.green,
-              ),
-              onChanged: (String? newValue) {
-                setState(() {
-                  buscarActorPelicula = newValue!;
-                });
-              },
-              items: <String>[ 'Actor', 'Pelicula']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),),
-            Text("Alquila tu pelicula favorita"),
-            Text("Estrenos"),
+            Container(
+              width: 100,
+              margin: EdgeInsets.only(left: 50),
+              child: DropdownButton<String>(
+                value: buscarActorPelicula,
+                iconSize: 24,
+                elevation: 16,
+
+                onChanged: (String? newValue) {
+                  setState(() {
+                    buscarActorPelicula = newValue!;
+                  });
+                },
+                items: <String>[ 'Actor', 'Pelicula']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),),
+            ),
+            Center(child: Container(margin: EdgeInsets.only(bottom: 20),child: Text("Alquila tu pelicula favorita",style: TextStyle(fontSize:20),))),
+            Center(child: Text("Estrenos",style: TextStyle(fontSize: 18),)),
             Container(
               padding: EdgeInsets.only(top: 10),
               child: (estrenos.length>0)?Swiper(
@@ -194,6 +195,13 @@ class _SecundarioState extends State<Secundario> {
                           children: [
                             Text(estrenos[index]["title"]),
                             Text("Año de estreno "+estrenos[index]["release_year"].toString()),
+                            Container(
+                              child: Image.network(
+                                "https://picsum.photos/"+(index+100).toString(),
+                                width: 150,
+                                height: 150,
+                              ),
+                            ),
                             RaisedButton(
                               onPressed: (){
                                 putAgregarPeliculaCarrito(estrenos[index]["inventory_id"]);
@@ -213,7 +221,7 @@ class _SecundarioState extends State<Secundario> {
                 //control: new SwiperControl(),//flechas de desplazamiento
               ):Text("No hay estrenos"),
             ),
-            Text("La mas rentadas en la ultima semana"),
+            Center(child: Container(margin:EdgeInsets.symmetric(vertical: 10),child: Text("La mas rentadas en la ultima semana",style: TextStyle(fontSize: 18),))),
             Container(
               padding: EdgeInsets.only(top: 10),
               child: (masRentadasUltimaSemana.length>0)?Swiper(
@@ -231,6 +239,13 @@ class _SecundarioState extends State<Secundario> {
                           children: [
                             Text(masRentadasUltimaSemana[index]["title"]),
                             Text("rentas "+masRentadasUltimaSemana[index]["rentas"].toString()),
+                            Container(
+                              child: Image.network(
+                                "https://picsum.photos/"+(index+200).toString(),
+                                width: 150,
+                                height: 150,
+                              ),
+                            ),
                             RaisedButton(
                               onPressed: (){
                                 putAgregarPeliculaCarrito(masRentadasUltimaSemana[index]["inventory_id"]);
@@ -248,7 +263,7 @@ class _SecundarioState extends State<Secundario> {
                 //control: new SwiperControl(),//flechas de desplazamiento
               ):Text("No hay peliculas rentadas en la ultima semana"),
             ),
-            Text("La mas rentada en todos lo tiempos"),
+            Center(child: Container(margin:EdgeInsets.symmetric(vertical: 10),child: Text("La mas rentada en todos lo tiempos",style: TextStyle(fontSize: 18),))),
             Container(
               padding: EdgeInsets.only(top: 10),
               child: (masRentadas.length>0)?Swiper(
@@ -266,6 +281,13 @@ class _SecundarioState extends State<Secundario> {
                           children: [
                             Text(masRentadas[index]["title"]),
                             Text("rentas "+masRentadas[index]["rentas"].toString()),
+                            Container(
+                              child: Image.network(
+                                "https://picsum.photos/"+(index+300).toString(),
+                                width: 150,
+                                height: 150,
+                              ),
+                            ),
                             RaisedButton(
                               onPressed: (){
                                 putAgregarPeliculaCarrito(masRentadas[index]["inventory_id"]);

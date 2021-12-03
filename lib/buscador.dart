@@ -116,6 +116,7 @@ class _SecundarioState extends State<Secundario> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("Tienda de peliculas"),
+          backgroundColor: Colors.green,
           actions: <Widget>[ppm()],
         ),
         body: SizedBox(
@@ -145,28 +146,28 @@ class _SecundarioState extends State<Secundario> {
                   ],
                 ),
               ),
-              DropdownButton<String>(
-                value: buscarActorPelicula,
-                iconSize: 24,
-                elevation: 16,
-                underline: Container(
-                  height: 2,
-                  color: Colors.green,
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    buscarActorPelicula = newValue!;
-                  });
-                },
-                items: <String>[ 'Actor', 'Pelicula']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),),
-              Text("Alquila tu pelicula favorita"),
-              Text("Peliculas encontradas"),
+              Container(
+                width: 100,
+                margin: EdgeInsets.only(left: 50),
+                child: DropdownButton<String>(
+                  value: buscarActorPelicula,
+                  iconSize: 24,
+                  elevation: 16,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      buscarActorPelicula = newValue!;
+                    });
+                  },
+                  items: <String>[ 'Actor', 'Pelicula']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),),
+              ),
+              Center(child: Container(margin: EdgeInsets.only(bottom: 20),child: Text("Alquila tu pelicula favorita",style: TextStyle(fontSize:20),))),
+              Center(child: Text("Peliculas encontradas",style: TextStyle(fontSize: 18),)),
               Container(
                 padding: EdgeInsets.only(top: 10),
                 child: (busquedas.length>0)?Swiper(
@@ -182,6 +183,13 @@ class _SecundarioState extends State<Secundario> {
                               children: [
                                 Text(busquedas[index]["title"]),
                                 Text("Año de estreno "+busquedas[index]["release_year"].toString()),
+                                Container(
+                                  child: Image.network(
+                                    "https://picsum.photos/"+(index+100).toString(),
+                                    width: 150,
+                                    height: 150,
+                                  ),
+                                ),
                                 RaisedButton(
                                   onPressed: (){
                                     putAgregarPeliculaCarrito(busquedas[index]["inventory_id"]);
@@ -197,7 +205,7 @@ class _SecundarioState extends State<Secundario> {
                   //control: new SwiperControl(),//flechas de desplazamiento
                 ):Text("No se encontraron peliculas"),
               ),
-              Text("Estrenos"),
+              Center(child: Text("Estrenos",style: TextStyle(fontSize: 18),)),
               Container(
                 padding: EdgeInsets.only(top: 10),
                 child: (estrenos.length>0)?Swiper(
@@ -213,6 +221,13 @@ class _SecundarioState extends State<Secundario> {
                               children: [
                                 Text(estrenos[index]["title"]),
                                 Text("Año de estreno "+estrenos[index]["release_year"].toString()),
+                                Container(
+                                  child: Image.network(
+                                    "https://picsum.photos/"+(index+200).toString(),
+                                    width: 150,
+                                    height: 150,
+                                  ),
+                                ),
                                 RaisedButton(
                                   onPressed: (){
                                     putAgregarPeliculaCarrito(estrenos[index]["inventory_id"]);

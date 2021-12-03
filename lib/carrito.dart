@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'login.dart';
 import 'package:flutter_app_tienda_videos/crearCuenta.dart';
 import 'inicio.dart';
@@ -7,6 +8,9 @@ import 'package:flutter_app_tienda_videos/confirmacionPago.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class Carrito extends StatelessWidget {
   const Carrito({Key? key}) : super(key: key);
@@ -56,10 +60,116 @@ class _SecundarioState extends State<Secundario> {
     });
 
   }
+  String obtieneNDias(int diasDespues,String string){
+    String fechaSiguienteSemana="";
+    var elem=string.split("-");
+    var anio=int.parse(elem[0]);
+    var mes=int.parse(elem[1]);
+    var dia=int.parse(elem[2]);
+    var bisiesto=false;
+    if(anio%400==0){
+      bisiesto=true;
+    }
+    if(anio%4==0){
+      bisiesto=true;
+    }
+    int dias_mes=0;
+    switch(mes) {
+      case 1:
+      case 3:
+      case 5:
+      case 7:
+      case 8:
+      case 10:
+      case 12:
+        dias_mes = 31;
+        break;
+      case 2:
+        if (bisiesto) {
+          dias_mes = 29;
+        } else {
+          dias_mes = 28;
+        }
+        break;
+      default:
+        dias_mes = 30;
+    }
+    if(dia+diasDespues<=dias_mes){
+      dia+=diasDespues;
+    }else{
+      dia=(dia+diasDespues)-dias_mes;
+      if(mes==12){
+        mes=1;
+        anio+=1;
+      }else{
+        mes+=1;
+      }
+    }
+    fechaSiguienteSemana=anio.toString()+"-"+mes.toString()+"-"+dia.toString();
+    print(fechaSiguienteSemana);
+    return fechaSiguienteSemana;
+  }
+  DateTime dateInput=DateTime.now();
+  void _datePresent(){
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    String string = dateFormat.format(DateTime.now());
+    showDatePicker(context: context, initialDate: dateFormat.parse(obtieneNDias(1,string)), firstDate: dateFormat.parse(obtieneNDias(1,string)), lastDate: dateFormat.parse(obtieneNDias(7,string)))
+        .then((value) =>{
+      if(value==null){
+      }else{
+        setState(() {
+          print("Seleccion del dia del usuario");
+          dateInput=value;
+          //Cuando se tiene un string que se quiere parsear a datime var parsedDate = DateTime.parse(fechaSiguienteSemana);
+          DateFormat d = DateFormat("EEEE");
+          print( d.format(dateInput));
+          switch(d.format(dateInput)){
+            case "Sunday":
+              String string = dateFormat.format(dateInput);
+              dateInput=DateFormat('yyyy-MM-dd').parse(obtieneNDias(1, string));
 
+              break;
+            case "Saturday":
+              String string = dateFormat.format(dateInput);
+              dateInput=DateFormat('yyyy-MM-dd').parse(obtieneNDias(2, string));
+              break;
+          }
+        })
+      }
+    });
+  }
+  String usuario="";
+  int idUsuario=1;
+  getData()async{
+    SharedPreferences preferences= await SharedPreferences.getInstance();
+    setState(() {
+      usuario=preferences.getString("usuario")!;
+      idUsuario=preferences.getInt("idUsuario")!;
+    });
+  }
   void initState() {
     // TODO: implement initState
+    getData();
     getCarrito();
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    String string = dateFormat.format(dateInput);
+    dateInput=DateFormat('yyyy-MM-dd').parse(obtieneNDias(1, string));
+    setState((){
+      print("Seleccion del dia del usuario");
+      //Cuando se tiene un string que se quiere parsear a datime var parsedDate = DateTime.parse(fechaSiguienteSemana);
+      DateFormat d = DateFormat("EEEE");
+      print( d.format(dateInput));
+      switch(d.format(dateInput)){
+        case "Sunday":
+          String string = dateFormat.format(dateInput);
+          dateInput=DateFormat('yyyy-MM-dd').parse(obtieneNDias(1, string));
+          break;
+        case "Saturday":
+          String string = dateFormat.format(dateInput);
+          dateInput=DateFormat('yyyy-MM-dd').parse(obtieneNDias(2, string));
+          break;
+      }
+    });
     super.initState();
   }
   @override
@@ -75,74 +185,111 @@ class _SecundarioState extends State<Secundario> {
         width: size.width,
         child: ListView(
           children: [
-            Text("Carrito de peliculas"),
-            Text("Han agregado la siguientes peliculas"),
-            Scrollbar(
-              child: ((carrito.length<=0)?
-              Text("No peliculas en el carrito"):
-              ListView.builder(//Este listview esta atento a los cambios
-                  itemCount: carrito.length, //Sin este valor el listview interpreta una lista infinita, y se queda en un bucle
-                  scrollDirection: Axis.vertical,//Sin esto hay error
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int il){//Se ejecuta en cada cambio
-                    return Container(
-                        color: (il%2==0)?Colors.grey:Colors.white,
-                        child: Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width*(3/9),
-                              child: Column(
-                                children: [
-                                  (carrito[il]['title']==null)?Text(""):Text(carrito[il]['title']),//Text(titulos[id2]),
-                                  (carrito[il]['description']==null)?Text(""):Text(carrito[il]['description'])//Text(datos[id2])
-                                ],
+            (usuario!=null)?Text(usuario):Text("No se identifico el usuario"),
+            Container(margin:EdgeInsets.symmetric(vertical: 10),child: Center(child: Text("Carrito de peliculas",style: TextStyle(fontSize: 20),))),
+            Container(margin:EdgeInsets.symmetric(vertical: 10),child: Center(child: Text("Han agregado la siguientes peliculas",style: TextStyle(fontSize: 18),))),
+            Container(//Contenedor que tiene un scrollbar con una lista de widgets que viene de una lista de elementos
+              height: 200,
+              padding: EdgeInsets.all(5),
+              child: Scrollbar(
+                child: ((carrito.length<=0)?
+                Text("No hay peliculas en el carrito"):
+                ListView.builder(//Este listview esta atento a los cambios
+                    itemCount: carrito.length, //Sin este valor el listview interpreta una lista infinita, y se queda en un bucle
+                    scrollDirection: Axis.vertical,//Sin esto hay error
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int il){//Se ejecuta en cada cambio
+                      return Container(
+                          color: (il%2==0)?Colors.green:Colors.white,
+                          child: Row(
+                            children: [
+                              Container(
+                                child: Image.network(
+                                  "https://picsum.photos/"+(carrito[il]["inventory_id"]%1000).toString(),
+                                  width: 100,
+                                  height: 100,
+                                ),
                               ),
-                            ),
-                            RaisedButton(
-                                onPressed: (){
-                                  deleteQuitarPeliculaCarrito(carrito[il]["inventory_id"]);
-                                },
-                              child: Text("Quitar pelicula"),
-                            )
-                          ],
-                        )
-                    );
-                  }
-              ))),
-              Row(
-              children: [
-                Text("Fecha de devolucion"),
-                Icon(Icons.calendar_today),
-              ],
-            ),
-            Column(
-              children: [
-                Row(
-                  children: [
-                    Text("TOTAL"),
-                    Text(obtenerTotalCarrito())
+                              Container(
+                                width: MediaQuery.of(context).size.width*(3/9),
+                                child: Column(
+                                  children: [
+                                    (carrito[il]['title']==null)?Text(""):Text(carrito[il]['title']),//Text(titulos[id2]),
+                                    (carrito[il]['description']==null)?Text(""):Text(carrito[il]['description'])//Text(datos[id2])
+                                  ],
+                                ),
+                              ),
 
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text("DSCTO"),
-                    Text(obtenerDescuento())
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text("Total con DSCTO"),
-                    Text(obtenerTotalConDescuento())
-                  ],
-                ),
-                RaisedButton(
-                  onPressed: () {
-                    Navigator.push(context,MaterialPageRoute(builder:(context)=>ConfirmacionPago()));
-                  },
-                  child: Text("Pagar"),
-                )
-              ],
+                              RaisedButton(
+                                  onPressed: (){
+                                    deleteQuitarPeliculaCarrito(carrito[il]["inventory_id"]);
+                                  },
+                                child: Text("Quitar\npelicula"),
+                              )
+                            ],
+                          )
+                      );
+                    }
+                ))),
+            ),
+              Container(
+                margin: EdgeInsets.only(left: 20),
+                child: Row(
+                children: [
+                  Text("Fecha de devolucion"),
+                  Container(
+                    height: 70,
+                    child: Row(
+                      children: [
+                        Text((dateInput==null)?"no se ha escogido ninguna fecha":DateFormat.yMMMd().format(dateInput)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon:Icon(Icons.calendar_today),onPressed:_datePresent,),
+                ],
+            ),
+              ),
+            Container(
+              margin: EdgeInsets.only(right: 20),
+              child: Column(
+                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text("TOTAL"),
+                      Text(obtenerTotalCarrito())
+
+                    ],
+                  ),
+                  SizedBox(height: 10,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text("DSCTO"),
+                      Text(obtenerDescuento())
+                    ],
+                  ),
+                   SizedBox(height: 10,),
+                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text("Total con DSCTO"),
+                      Text(obtenerTotalConDescuento())
+                    ],
+                  ),
+                   SizedBox(height: 10,),
+                   RaisedButton(
+                    onPressed: () async {
+                      print("confirmando pago");
+                      int numDias=obtenerNumeroDiasPrestamo();
+
+                      Navigator.push(context,MaterialPageRoute(builder:(context)=>ConfirmacionPago(numDias,dateInput.toString())));
+                    },
+                    child: Text("Pagar"),
+                  )
+                ],
+              ),
             )
 
           ]
@@ -217,9 +364,19 @@ class _SecundarioState extends State<Secundario> {
       }
     }
   }
-
-  num obtenerNumeroDiasPrestamo() {
-    return 7;
+  obtenerNumeroDiasPrestamo() {
+    print("obtenerNumeroDiasPrestamo");
+    DateFormat dateFormat = DateFormat("yyyy-M-d");
+    String stringNow= dateFormat.format(DateTime.now());
+    String string = dateFormat.format(dateInput);
+    print("fecha seleccionada="+string);
+    int i=1;
+    for(i=1;i<=7;i++){
+      if(string==obtieneNDias(i, stringNow)){
+        return i;
+      }
+    }
+    return 1;
   }
   double totalConDescuento=0;
   String obtenerTotalConDescuento() {
